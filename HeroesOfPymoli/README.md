@@ -312,26 +312,36 @@ male_purchase_count = len(male_df)
 male_avg_purhcase_price = '${:.2f}'.format(male_df['Price'].mean())
 male_total_purhcase_price = '${:,.2f}'.format(male_df['Price'].sum())
 
+unique_male_users_df = male_df.groupby('SN').sum()
+male_normalized_total = '${:.2f}'.format(unique_male_users_df['Price'].mean())
+
 female_df = json_df.loc[json_df['Gender'] == 'Female',:]
 female_purchase_count = len(female_df)
 female_avg_purhcase_price = '${:.2f}'.format(female_df['Price'].mean())
 female_total_purhcase_price = '${:,.2f}'.format(female_df['Price'].sum())
+
+unique_female_users_df = female_df.groupby('SN').sum()
+female_normalized_total = '${:.2f}'.format(unique_female_users_df['Price'].mean())
 
 other_df = json_df.loc[(json_df['Gender'] != 'Male') & (json_df['Gender'] != 'Female'),:]
 other_purchase_count = len(other_df)
 other_avg_purhcase_price = '${:.2f}'.format(other_df['Price'].mean())
 other_total_purhcase_price = '${:,.2f}'.format(other_df['Price'].sum())
 
+unique_other_users_df = other_df.groupby('SN').sum()
+other_normalized_total = '${:.2f}'.format(unique_other_users_df['Price'].mean())
+
 purchase_analysis_df = pd.DataFrame({
     'Gender': ['Female','Male','Other/Non-Disclosed'],
     'Purchase Count': [female_purchase_count,male_purchase_count,other_purchase_count],
     'Average Purchase Price':[female_avg_purhcase_price,male_avg_purhcase_price,other_avg_purhcase_price],
-    'Total Purchase Price':[female_total_purhcase_price,male_total_purhcase_price,other_total_purhcase_price]
+    'Total Purchase Price':[female_total_purhcase_price,male_total_purhcase_price,other_total_purhcase_price],
+    'Normalized Total': [male_normalized_total,female_normalized_total,other_normalized_total]
 }
 )
 purchase_analysis_df = purchase_analysis_df.set_index('Gender')
 
-purchase_analysis_df[['Purchase Count','Average Purchase Price','Total Purchase Price']]
+purchase_analysis_df[['Purchase Count','Average Purchase Price','Total Purchase Price','Normalized Total']]
 
 ```
 
@@ -359,9 +369,11 @@ purchase_analysis_df[['Purchase Count','Average Purchase Price','Total Purchase 
       <th>Purchase Count</th>
       <th>Average Purchase Price</th>
       <th>Total Purchase Price</th>
+      <th>Normalized Total</th>
     </tr>
     <tr>
       <th>Gender</th>
+      <th></th>
       <th></th>
       <th></th>
       <th></th>
@@ -373,18 +385,21 @@ purchase_analysis_df[['Purchase Count','Average Purchase Price','Total Purchase 
       <td>136</td>
       <td>$2.82</td>
       <td>$382.91</td>
+      <td>$4.02</td>
     </tr>
     <tr>
       <th>Male</th>
       <td>633</td>
       <td>$2.95</td>
       <td>$1,867.68</td>
+      <td>$3.83</td>
     </tr>
     <tr>
       <th>Other/Non-Disclosed</th>
       <td>11</td>
       <td>$3.25</td>
       <td>$35.74</td>
+      <td>$4.47</td>
     </tr>
   </tbody>
 </table>
@@ -503,8 +518,8 @@ temp_df[['Percentage of Players','Total Count']]
 
 
 ```python
+#print(json_df.head())
 age_df = json_df.groupby('Age Range').Price.agg(['count','mean','sum'])
-
 age_df['mean'] = age_df['mean'].map('${:,.2f}'.format)
 age_df['sum'] = age_df['sum'].map('${:,.2f}'.format)
 
@@ -513,6 +528,9 @@ age_df = age_df.rename(columns={
     'mean': 'Average Purchase Price',
     'sum': 'Total Purchase Value'
 })
+
+unique_male_users_df = male_df.groupby('SN').sum()
+male_normalized_total = '${:.2f}'.format(unique_male_users_df['Price'].mean())
 
 age_df
 ```
